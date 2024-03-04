@@ -42,7 +42,12 @@ scene.add(lightHelper);
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(gridHelper);
 const controls = new OrbitControls(camera, renderer.domElement);
-const moonTexture = new THREE.TextureLoader().load('./assets/moon.jpg');
+const textureLoader = new THREE.TextureLoader()
+textureLoader.crossOrigin = "Anonymous"
+
+
+const moonTexture = textureLoader.load('../assets/moon.jpg');
+
 const moon = new THREE.Mesh(
   new THREE.SphereGeometry(3, 32, 32),
   new THREE.MeshStandardMaterial({
@@ -51,8 +56,8 @@ const moon = new THREE.Mesh(
 )
 moon.position.set(20, 0, 0)
 scene.add(moon);
+const earthTexture = textureLoader.load('../assets/earth.jpg');
 
-const earthTexture = new THREE.TextureLoader().load('./assets/earth.jpg');
 const earth = new THREE.Mesh(
   new THREE.SphereGeometry(10, 32, 32),
   new THREE.MeshStandardMaterial({
@@ -60,7 +65,7 @@ const earth = new THREE.Mesh(
   })
 )
 scene.add(earth);
-const sunTexture = new THREE.TextureLoader().load('./assets/sun.jpg');
+const sunTexture = textureLoader.load('../assets/sun.jpg');
 
 const sun = new THREE.Mesh(
   new THREE.SphereGeometry(30, 32, 32),
