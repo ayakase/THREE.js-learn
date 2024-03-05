@@ -10,29 +10,29 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 // import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 
+
 const loader = new GLTFLoader();
 
-loader.load('../assets/of_planes_and_satellites.glb', function (gltf) {
-
-  scene.add(gltf.scene);
-  gltf.scene.scale.set(200, 200, 200)
-}, undefined, function (error) {
-
-  console.error(error);
-
-});
+const textureLoader = new THREE.TextureLoader()
+textureLoader.crossOrigin = "Anonymous"
 
 const scene = new THREE.Scene();
+scene.background = textureLoader.load('../assets/bg.png')
+
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
+camera.position.setZ(30);
+camera.position.setX(0);
+camera.position.setY(10);
+
+
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector("#bg"),
 });
-
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -43,10 +43,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // effect.domElement.style.backgroundColor = 'black';
 // document.body.appendChild(effect.domElement);
 
-camera.position.setZ(30);
-camera.position.setX(0);
-camera.position.setY(10);
-renderer.render(scene, camera);
 
 // Light config
 
@@ -58,15 +54,29 @@ scene.add(pointLight);
 
 // Helper config
 
-const lightHelper = new THREE.PointLightHelper(pointLight)
-scene.add(lightHelper);
+// const lightHelper = new THREE.PointLightHelper(pointLight)
+// scene.add(lightHelper);
 // const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper);
+
+// Controll
+
 // const controls = new OrbitControls(camera, effect.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const textureLoader = new THREE.TextureLoader()
-textureLoader.crossOrigin = "Anonymous"
+
+// Earth Model
+
+let earthModel
+loader.load('../assets/miku_amongus.glb', function (gltf) {
+  earthModel = gltf.scene
+  scene.add(earthModel);
+  earthModel.scale.set(1, 1, 1)
+
+}, undefined, function (error) {
+  console.error(error);
+});
+
 
 //Moon
 
@@ -119,6 +129,14 @@ function addRandomStar() {
 }
 Array(200).fill().forEach(addRandomStar)
 
+function moveCamera() {
+  const t = document.body.getBoundingClientRect().top
+  moon.rotation.x += 0.1
+  camera.position.z = t * -0.01
+
+
+}
+document.body.onscroll = moveCamera
 //Animate
 
 let t = 0
@@ -133,6 +151,9 @@ function render() {
   t += -0.005
   moon.position.x = 20 * Math.cos(t) + 0;
   moon.position.z = 20 * Math.sin(t) + 0;
+  // if (earthModel) {
+  //   earthModel.rotation.y += 0.01;
+  // }
   controls.update()
   renderer.render(scene, camera);
 }
