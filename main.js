@@ -4,12 +4,23 @@ import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect';
 import { TrackballControls } from 'three/addons/controls/TrackballControls';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
 
 // import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 // import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 
+const loader = new GLTFLoader();
 
+loader.load('../assets/of_planes_and_satellites.glb', function (gltf) {
+
+  scene.add(gltf.scene);
+  gltf.scene.scale.set(200, 200, 200)
+}, undefined, function (error) {
+
+  console.error(error);
+
+});
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -25,12 +36,12 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-let effect
-effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
-effect.setSize(window.innerWidth, window.innerHeight);
-effect.domElement.style.color = '#00ff00';
-effect.domElement.style.backgroundColor = 'black';
-document.body.appendChild(effect.domElement);
+// let effect
+// effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+// effect.setSize(window.innerWidth, window.innerHeight);
+// effect.domElement.style.color = '#00ff00';
+// effect.domElement.style.backgroundColor = 'black';
+// document.body.appendChild(effect.domElement);
 
 camera.position.setZ(30);
 camera.position.setX(0);
@@ -51,7 +62,9 @@ const lightHelper = new THREE.PointLightHelper(pointLight)
 scene.add(lightHelper);
 // const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper);
-const controls = new OrbitControls(camera, effect.domElement);
+// const controls = new OrbitControls(camera, effect.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+
 const textureLoader = new THREE.TextureLoader()
 textureLoader.crossOrigin = "Anonymous"
 
@@ -69,14 +82,14 @@ scene.add(moon);
 
 // Earth
 
-const earthTexture = textureLoader.load('../assets/earth.jpg');
-const earth = new THREE.Mesh(
-  new THREE.SphereGeometry(10, 32, 32),
-  new THREE.MeshStandardMaterial({
-    map: earthTexture
-  })
-)
-scene.add(earth);
+// const earthTexture = textureLoader.load('../assets/earth-plain.jpg');
+// const earth = new THREE.Mesh(
+//   new THREE.SphereGeometry(10, 32, 32),
+//   new THREE.MeshStandardMaterial({
+//     map: earthTexture
+//   })
+// )
+// scene.add(earth);
 
 // Sun 
 
@@ -115,14 +128,13 @@ function animate() {
 
 }
 function render() {
-  earth.rotation.y += 0.02
+  // earth.rotation.y += 0.02
   moon.rotation.y += 0.005
   t += -0.005
   moon.position.x = 20 * Math.cos(t) + 0;
   moon.position.z = 20 * Math.sin(t) + 0;
-
   controls.update()
-  effect.render(scene, camera);
+  renderer.render(scene, camera);
 }
 animate();
 
